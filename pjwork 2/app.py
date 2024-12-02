@@ -63,7 +63,7 @@ def bill():
     order_list = cursor.fetchall()
     return render_template('bill.html', order_list = order_list)
 
-@app.route('//api/totalSum')
+@app.route('/api/totalSum')
 def totalSum():
     totalPrice = request.form["sumPrice"]
     

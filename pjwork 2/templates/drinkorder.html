@@ -18,73 +18,117 @@
     />
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
+      var total_price = 0;
+
       function select_menu() {
-        var menu = $("#orderResult").text(); // 메뉴 이름
-        var quantity = $("#orderQuantity").val(); // 수량
-        var price = $("#price").text().replace("원", ""); // 가격 (문자 "원" 제거)
-        var totalPrice = $("#totalPrice").text().replace("원", "");
+          var selectedLi = $("li.choose");
 
-        var uC = confirm("메뉴를 선택하시겠습니까?");
-        //uC = userConfirmed
-        if (!uC) {
-          return;
-        }
 
-        $.ajax({
-          type: "POST",
-          url: "/api/order",
-          data: {
-            menu: menu,
-            quantity: quantity,
-            price: price,
-            totalPrice: totalPrice,
-          },
-          success: function (response) {
-            alert("메뉴가 담겼습니다!");
-          },
-        });
+          // 선택된 li에서 data-price와 text 값을 가져오기
+          var foodName = selectedLi.find("input[type='radio']").val(); // 음식 이름
+          var foodPrice = selectedLi.find("input[type='radio']").data("price"); // 가격
+          const foodPriceResult = foodPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+          // 해당 li의 select 요소에서 수량 가져오기
+          var quantity = selectedLi.find("select#orderQuantity").val(); // 수량
+
+          // 총 가격 계산
+          const totalPrice = foodPrice * quantity;
+          const totalPriceResult = totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+          $.ajax({
+              type: "POST",
+              url: "/api/order",
+              data: {
+                  menu: foodName,
+                  quantity: quantity,
+                  price: foodPriceResult,
+                  totalPrice: totalPriceResult,
+              },
+              success: function(response) {
+                  alert("메뉴가 담겼습니다!");
+                  closeModal()
+              },
+          });
       }
 
       function choose_menu(event) {
-        // 선택한 라디오 버튼값
-        const menu = event.target.value;
-        const price = $(event.target).data("price");
+          // 선택한 라디오 버튼값
+          const menu = event.target.value;
+          const price = $(event.target).data("price");
 
-        $("#orderResult").text(menu);
-        $("#price").text(price + "원");
+          // 모든 li 항목에서 'choose' 클래스 제거
+          $("li").removeClass('choose');
+
+          // 선택된 라디오 버튼이 속한 li 항목에 'choose' 클래스 추가
+          $(event.target).closest('li').addClass('choose');
+
+          $("#orderResult").text(menu);
+          $("#price").text(price + "원");
       }
+
 
       function choose_quan(event) {
-        // 메뉴가 선택되지 않은 경우 알림 표시
-        if ($("#orderResult").text().trim() === "") {
-          alert("메뉴를 먼저 선택해주세요.");
-          $("#orderQuantity").val("1"); // 수량 선택을 1로 초기화
-          return;
-        }
-        // 메뉴가 선택된 경우 수량 표시
-        $("#quantityResult").text(event.target.value);
-        sumPrice();
+          // 메뉴가 선택되지 않은 경우 알림 표시
+          if ($("#orderResult").text().trim() === "") {
+              alert("메뉴를 먼저 선택해주세요.");
+              $("#orderQuantity").val("1"); // 수량 선택을 1로 초기화
+              return;
+          }
+          // 메뉴가 선택된 경우 수량 표시
+          $("#quantityResult").text(event.target.value);
+          sumPrice();
       }
+
       function sumPrice() {
-        var quantity = $("#orderQuantity").val();
-        var price = $("#price").text().replace("원", "");
-        if (!price || quantity === "") {
-          return;
-        }
-        var total = quantity * parseInt(price); // 총액 계산
-        $("#totalPrice").text(total + "원");
+          var quantity = $("#orderQuantity").val();
+          var price = $("#price").text().replace("원", "");
+          if (!price || quantity === "") {
+              return;
+          }
+          var total = quantity * parseInt(price); // 총액 계산
+          $("#totalPrice").text(total + "원");
       }
 
       // 모달 열기 함수
       function openModal() {
-        $(".basket_modal_body").css("visibility", "visible");
+          // 'choose' 클래스가 들어간 li 항목을 찾기
+          var selectedLi = $("li.choose");
+
+          if (selectedLi.length > 0) {
+              // 선택된 li에서 data-price와 text 값을 가져오기
+              var foodName = selectedLi.find("input[type='radio']").val(); // 음식 이름
+              var foodPrice = selectedLi.find("input[type='radio']").data("price"); // 가격
+
+              // 해당 li의 select 요소에서 수량 가져오기
+              var quantity = selectedLi.find("select#orderQuantity").val(); // 수량
+
+              // 선택된 음식 이름과 가격을 모달에 반영
+              $("#orderResult").text(foodName);
+              $("#price").text(foodPrice + "원");
+              $("#quantityResult").text(quantity); // 수량 표시
+
+              // 총 가격 계산
+              const totalPrice = foodPrice * quantity;
+              const formattedPrice = totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+              const result = formattedPrice + "원";
+              $("#totalPrice").text(result);
+          } else {
+              alert("먼저 음식을 선택해주세요.");
+          }
+
+          // 모달을 보이게 하기
+          $(".basket_modal_body").css("visibility", "visible");
       }
+
+
 
       // 모달 닫기 함수
       function closeModal() {
-        $(".basket_modal_body").css("visibility", "hidden");
+          $(".basket_modal_body").css("visibility", "hidden");
+          $("#orderQuantity").val("1"); // 수량 선택을 1로 초기화
       }
-    </script>
+  </script>
   </head>
 
   <body>
