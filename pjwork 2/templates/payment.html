@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <head>
+        <meta charset="utf-8" />
+          <script src="https://js.tosspayments.com/v1/payment-widget"></script>
+        </head>
+</head>
+<body>
+<h2>결제하기</h2>
+
+<!-- 상품 정보 영역-->
+<div class="title">상품 정보</div>
+<p>토스 티셔츠</p>
+<p>결제 금액: 15,000원</p>
+
+<!-- 결제 방법 영역-->
+<div class="title">결제 방법</div>
+<div id="payment-method"></div>
+<div id="agreement"></div>
+<script>
+    const clientKey = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq' // 상점을 특정하는 키
+    const customerKey = 'YbX2HuSlsC9uVJW6NMRMj' // 결제 고객을 특정하는 키
+    const amount = 15_000 // 결제 금액
+  
+    /*결제위젯 영역 렌더링*/
+    const paymentWidget = PaymentWidget(clientKey, customerKey) // 회원 결제 초기화
+    // const paymentWidget = PaymentWidget(clientKey, PaymentWidget.ANONYMOUS) // 비회원 결제 초기화
+    paymentMethods = paymentWidget.renderPaymentMethods('#payment-method', amount)
+    
+    /*약관 영역 렌더링*/
+    const paymentAgreement = paymentWidget.renderAgreement('#agreement')
+  </script>
+  <!-- 결제 방법 영역-->
+<div class="title">결제 방법</div>
+<div id="payment-method"></div>
+<div id="agreement"></div>
+
+<!-- 결제 버튼 -->
+<button id="payment-button">결제하기</button>
+</body>
+</html>

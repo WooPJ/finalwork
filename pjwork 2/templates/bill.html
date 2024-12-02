@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>장바구니</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+    <link
+      href="{{ url_for('static', filename='css/comm.css') }}"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='css/foodList.css') }}"
+      rel="stylesheet"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      function remove(orderNum) {
+        if (confirm("삭제하시겠습니까?")) {
+          $.ajax({
+            type: "POST",
+            url: "/api/billremove",
+            data: {
+              orderNum: orderNum,
+            },
+            success: function (response) {
+              alert("메뉴가 삭제되었습니다!");
+              console.log(response);
+              location.reload(); // 새로고침
+            },
+          });
+        } else {
+          alert("삭제가 취소되었습니다.");
+        }
+      }
+      function totalSum() {
+        $.ajax({
+          type: "POST",
+          url: "/api/totalSum",
+          data: {
+            sumPrice: sumPrice,
+          },
+          success: function (response) {
+            alert("계산할 총액입니다.");
+            console.log(response);
+            location.reload(); // 새로고침
+          },
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <div class="food_container">
+      <div class="food_container_wrapper">
+        <div class="basket_top">
+          <div class="txt_area">
+            <p>장바구니</p>
+            <div>
+              <a href="/"
+                ><span class="sound_only"></span
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24"
+                  viewBox="0 -960 960 960"
+                  width="24"
+                >
+                  <path
+                    d="M240-200h120v-200q0-17 11.5-28.5T400-440h160q17 0 28.5 11.5T600-400v200h120v-360L480-740 240-560v360Zm-80 0v-360q0-19 8.5-36t23.5-28l240-180q21-16 48-16t48 16l240 180q15 11 23.5 28t8.5 36v360q0 33-23.5 56.5T720-120H560q-17 0-28.5-11.5T520-160v-200h-80v200q0 17-11.5 28.5T400-120H240q-33 0-56.5-23.5T160-200Zm320-270Z"
+                  ></path>
+                </svg>
+              </a>
+              <i class="fa fa-angle-right"></i>
+              장바구니
+            </div>
+          </div>
+        </div>
+        <ul class="food_ul">
+          <li>
+            <a href="/ordercol">음식</a>
+          </li>
+          <li>
+            <a href="/drinkorder">음료</a>
+          </li>
+          <li class="on">
+            <a href="/bill">장바구니</a>
+          </li>
+        </ul>
+
+        <div class="basket_tb_div">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">No</th>
+                <th scope="col" class="menu">메뉴</th>
+                <th scope="col">가격</th>
+                <th scope="col">수량</th>
+                <th scope="col">총금액</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in order_list %}
+              <tr>
+                <td class="orderNum">{{i[0]}}</td>
+                <td>{{i[1]}}</td>
+                <td>{{i[3]}}</td>
+                <td>{{i[2]}}</td>
+                <td>
+                  {{i[4]}}
+                  <button class="remove_btn" onclick="remove({{i[0]}})">
+                    삭제
+                  </button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="bottom_btn_div">
+            <button onclick="location.href='/'">홈으로가기</button>
+            <button onclick="location.href='/payment'">결제하기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

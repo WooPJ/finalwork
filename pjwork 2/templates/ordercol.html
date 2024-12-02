@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>음식 목록</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+    <link
+      href="{{ url_for('static', filename='css/comm.css') }}"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='css/foodList.css') }}"
+      rel="stylesheet"
+    />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+      function select_menu() {
+        var menu = $("#orderResult").text(); // 메뉴 이름
+        var quantity = $("#orderQuantity").val(); // 수량
+        var price = $("#price").text().replace("원", ""); // 가격 (문자 "원" 제거)
+        var totalPrice = $("#totalPrice").text().replace("원", "");
+
+        var uC = confirm("메뉴를 선택하시겠습니까?");
+        //uC = userConfirmed
+        if (!uC) {
+          return;
+        }
+
+        $.ajax({
+          type: "POST",
+          url: "/api/order",
+          data: {
+            menu: menu,
+            quantity: quantity,
+            price: price,
+            totalPrice: totalPrice,
+          },
+          success: function (response) {
+            alert("메뉴가 담겼습니다!");
+          },
+        });
+      }
+
+      function choose_menu(event) {
+        // 선택한 라디오 버튼값
+        const menu = event.target.value;
+        const price = $(event.target).data("price");
+
+        $("#orderResult").text(menu);
+        $("#price").text(price + "원");
+      }
+
+      function choose_quan(event) {
+        // 메뉴가 선택되지 않은 경우 알림 표시
+        if ($("#orderResult").text().trim() === "") {
+          alert("메뉴를 먼저 선택해주세요.");
+          $("#orderQuantity").val("1"); // 수량 선택을 1로 초기화
+          return;
+        }
+        // 메뉴가 선택된 경우 수량 표시
+        $("#quantityResult").text(event.target.value);
+        sumPrice();
+      }
+      function sumPrice() {
+        var quantity = $("#orderQuantity").val();
+        var price = $("#price").text().replace("원", "");
+        if (!price || quantity === "") {
+          return;
+        }
+        var total = quantity * parseInt(price); // 총액 계산
+        $("#totalPrice").text(total + "원");
+      }
+
+      // 모달 열기 함수
+      function openModal() {
+        $(".basket_modal_body").css("visibility", "visible");
+      }
+
+      // 모달 닫기 함수
+      function closeModal() {
+        $(".basket_modal_body").css("visibility", "hidden");
+      }
+    </script>
+  </head>
+
+  <body>
+    <div class="food_container">
+      <div class="food_container_wrapper">
+        <div class="food_top">
+          <div class="txt_area">
+            <p>음식종류 주문</p>
+            <div>
+              <a href="/"
+                ><span class="sound_only"></span
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24"
+                  viewBox="0 -960 960 960"
+                  width="24"
+                >
+                  <path
+                    d="M240-200h120v-200q0-17 11.5-28.5T400-440h160q17 0 28.5 11.5T600-400v200h120v-360L480-740 240-560v360Zm-80 0v-360q0-19 8.5-36t23.5-28l240-180q21-16 48-16t48 16l240 180q15 11 23.5 28t8.5 36v360q0 33-23.5 56.5T720-120H560q-17 0-28.5-11.5T520-160v-200h-80v200q0 17-11.5 28.5T400-120H240q-33 0-56.5-23.5T160-200Zm320-270Z"
+                  ></path>
+                </svg>
+              </a>
+              <i class="fa fa-angle-right"></i>
+              음식종류 주문
+            </div>
+          </div>
+        </div>
+        <ul class="food_ul">
+          <li class="on">
+            <a href="/ordercol">음식</a>
+          </li>
+          <li>
+            <a href="/drinkorder">음료</a>
+          </li>
+          <li>
+            <a href="/bill">장바구니</a>
+          </li>
+        </ul>
+        <form class="food_list">
+          <ul class="food_list_ul">
+            <li class="food_list_li">
+              <div class="radidBtn_div">
+                <input
+                  type="radio"
+                  id="option1"
+                  name="food"
+                  value="목살&늑간살 구이"
+                  data-price="32000"
+                  onclick="choose_menu(event)"
+                  required
+                />
+                <label for="option1"></label>
+              </div>
+              <div class="list_box">
+                <div class="food_img">
+                  <img src="../static/img/foodList_img1.jpg" />
+                </div>
+
+                <div class="food_name">
+                  <div class="food_txt">
+                    <a href="#" class="food_tit"> 목살&늑간살 구이 </a>
+                  </div>
+                  <div class="food_price_cnt_div">
+                    <p class="food_price">32,000원</p>
+                    <select
+                      name="quantity"
+                      id="orderQuantity"
+                      onchange="choose_quan(event)"
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="food_list_li">
+              <div class="radidBtn_div">
+                <input
+                  type="radio"
+                  id="option2"
+                  name="food"
+                  value="프로슈토 파스타"
+                  data-price="18000"
+                  onclick="choose_menu(event)"
+                />
+                <label for="option2"></label>
+              </div>
+              <div class="list_box">
+                <div class="food_img">
+                  <img src="../static/img/foodList_img2.jpg" />
+                </div>
+
+                <div class="food_name">
+                  <div class="food_txt">
+                    <a href="#" class="food_tit"> 프로슈토 파스타 </a>
+                  </div>
+                  <div class="food_price_cnt_div">
+                    <p class="food_price">18,000원</p>
+                    <select
+                      name="quantity"
+                      id="orderQuantity"
+                      onchange="choose_quan(event)"
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="food_list_li">
+              <div class="radidBtn_div">
+                <input
+                  type="radio"
+                  id="option3"
+                  name="food"
+                  value="트러플 크림 뇨끼"
+                  data-price="21000"
+                  onclick="choose_menu(event)"
+                />
+                <label for="option3"></label>
+              </div>
+              <div class="list_box">
+                <div class="food_img">
+                  <img src="../static/img/foodList_img3.jpg" />
+                </div>
+
+                <div class="food_name">
+                  <div class="food_txt">
+                    <a href="#" class="food_tit"> 트러플 크림 뇨끼 </a>
+                  </div>
+                  <div class="food_price_cnt_div">
+                    <p class="food_price">21,000원</p>
+                    <select
+                      name="quantity"
+                      id="orderQuantity"
+                      onchange="choose_quan(event)"
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="food_list_li">
+              <div class="radidBtn_div">
+                <input
+                  type="radio"
+                  id="option4"
+                  name="food"
+                  value="페퍼로니 피자"
+                  data-price="21000"
+                  onclick="choose_menu(event)"
+                />
+                <label for="option4"></label>
+              </div>
+              <div class="list_box">
+                <div class="food_img">
+                  <img src="../static/img/foodList_img4.jpg" />
+                </div>
+
+                <div class="food_name">
+                  <div class="food_txt">
+                    <a href="#" class="food_tit"> 페퍼로니 피자 </a>
+                  </div>
+                  <div class="food_price_cnt_div">
+                    <p class="food_price">21,000원</p>
+                    <select
+                      name="quantity"
+                      id="orderQuantity"
+                      onchange="choose_quan(event)"
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="food_list_li">
+              <div class="radidBtn_div">
+                <input
+                  type="radio"
+                  id="option5"
+                  name="food"
+                  value="우삼겹 파스타"
+                  data-price="18000"
+                  onclick="choose_menu(event)"
+                />
+                <label for="option5"></label>
+              </div>
+              <div class="list_box">
+                <div class="food_img">
+                  <img src="../static/img/foodList_img5.jpg" />
+                </div>
+
+                <div class="food_name">
+                  <div class="food_txt">
+                    <a href="#" class="food_tit"> 우삼겹 파스타 </a>
+                  </div>
+                  <div class="food_price_cnt_div">
+                    <p class="food_price">18,000원</p>
+                    <select
+                      name="quantity"
+                      id="orderQuantity"
+                      onchange="choose_quan(event)"
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="food_list_li">
+              <div class="radidBtn_div">
+                <input
+                  type="radio"
+                  id="option6"
+                  name="food"
+                  value="로제크림뇨끼"
+                  data-price="18000"
+                  onclick="choose_menu(event)"
+                />
+                <label for="option6"></label>
+              </div>
+              <div class="list_box">
+                <div class="food_img">
+                  <img src="../static/img/foodList_img6.jpeg" />
+                </div>
+
+                <div class="food_name">
+                  <div class="food_txt">
+                    <a href="#" class="food_tit"> 로제크림뇨끼 </a>
+                  </div>
+                  <div class="food_price_cnt_div">
+                    <p class="food_price">18,000원</p>
+                    <select
+                      name="quantity"
+                      id="orderQuantity"
+                      onchange="choose_quan(event)"
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="food_list_li">
+              <div class="radidBtn_div">
+                <input
+                  type="radio"
+                  id="option7"
+                  name="food"
+                  value="바질 크림 파스타"
+                  data-price="18000"
+                  onclick="choose_menu(event)"
+                />
+                <label for="option7"></label>
+              </div>
+              <div class="list_box">
+                <div class="food_img">
+                  <img src="../static/img/foodList_img7.jpg" />
+                </div>
+
+                <div class="food_name">
+                  <div class="food_txt">
+                    <a href="#" class="food_tit"> 바질 크림 파스타 </a>
+                  </div>
+                  <div class="food_price_cnt_div">
+                    <p class="food_price">18,000원</p>
+                    <select
+                      name="quantity"
+                      id="orderQuantity"
+                      onchange="choose_quan(event)"
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="food_list_li">
+              <div class="radidBtn_div">
+                <input
+                  type="radio"
+                  id="option8"
+                  name="food"
+                  value="갈릭버터 감자튀김"
+                  data-price="9000"
+                  onclick="choose_menu(event)"
+                />
+                <label for="option8"></label>
+              </div>
+              <div class="list_box">
+                <div class="food_img">
+                  <img src="../static/img/foodList_img8.jpg" />
+                </div>
+
+                <div class="food_name">
+                  <div class="food_txt">
+                    <a href="#" class="food_tit"> 갈릭버터 감자튀김 </a>
+                  </div>
+                  <div class="food_price_cnt_div">
+                    <p class="food_price">9,000원</p>
+                    <select
+                      name="quantity"
+                      id="orderQuantity"
+                      onchange="choose_quan(event)"
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </form>
+        <div class="bottom_btn_div">
+          <button onclick="location.href='/'">홈으로가기</button>
+          <button onclick="openModal()">장바구니 담기</button>
+        </div>
+      </div>
+    </div>
+    <div class="basket_modal_body">
+      <div></div>
+      <div class="basket_modal_container">
+        <div class="basket_modal_container_flex">
+          <div>
+            <span>선택상품 확인</span>
+            <i class="fa-solid fa-x" onclick="closeModal()"></i>
+          </div>
+          <div class="basket-info-modal">
+            <p>선택한 상품이 맞으신가요?</p>
+            <div class="check_info">
+              <p id="orderResult"><br /><span id="price"></span></p>
+              <p>.....................................</p>
+              <p id="quantityResult"></p>
+            </div>
+            <p>총 <span id="totalPrice"></span></p>
+            <div class="basketBtn_div">
+              <button onclick="closeModal()">취소</button>
+              <button onclick="select_menu()">담기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

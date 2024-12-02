@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PJESTAURANT</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+    <link
+      href="{{ url_for('static', filename='css/comm.css') }}"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='css/home.css') }}"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+          <div class="slide1_div">
+            <div class="slide1_txt">
+              <p>SAVOR THE ART OF DINING AT PJESTAURANT</p>
+
+              당신의 미각을 사로잡을 특별한 요리를 PJESTAURANT에서 즐겨보세요!
+            </div>
+            <div>
+              <div class="video_back"></div>
+              <video
+                preload="auto"
+                autoplay
+                loop
+                muted
+                src="../static/img/main_ video.mp4"
+              ></video>
+            </div>
+            <button class="more_btn" id="more_btn_scroll">더 알아보기</button>
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="slide2_div" id="slide2_div">
+            <ul>
+              <li class="li_01">
+                <div class="img_box img01"></div>
+                <div class="inner">
+                  <div class="ser">
+                    <span>FOOD TYPE</span>
+                    <p>모두를 위한 특별한 맛</p>
+                  </div>
+                  <div class="txt">
+                    <p class="pl">
+                      당신의 입맛을 사로잡을 완벽한 요리를 제공합니다.
+                    </p>
+                    <a href="/ordercol">주문하러가기</a>
+                  </div>
+                </div>
+              </li>
+              <li class="li_02">
+                <div class="img_box img02"></div>
+                <div class="inner">
+                  <div class="ser">
+                    <span>BEVERAGE TYPE</span>
+                    <p>식사와 잘 어울리는 완벽한 음료</p>
+                  </div>
+                  <div class="txt">
+                    <p class="pl">
+                      따뜻한 커피부터 상쾌한 음료까지, 다양한 음료를 제공합니다.
+                    </p>
+                    <a href="/drinkorder">주문하러가기</a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </body>
+
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  <script>
+    // 스크롤효과 swiper slider사용
+    var swiper = new Swiper(".mySwiper", {
+      direction: "vertical",
+      slidesPerView: 1,
+      spaceBetween: 0,
+      mousewheel: true,
+      pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+      },
+    });
+
+    //버튼 클릭시 스크롤 기능
+    document
+      .getElementById("more_btn_scroll")
+      .addEventListener("click", function () {
+        swiper.slideTo(1, 500);
+      });
+  </script>
+</html>
