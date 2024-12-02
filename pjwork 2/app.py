@@ -63,6 +63,7 @@ def bill():
     order_list = cursor.fetchall()
     return render_template('bill.html', order_list = order_list)
 
+# 얘는 결제하기 페이지(payment.html)에서 총 결제 금액 가져올때 쓰는 api
 @app.route('/api/totalSum')
 def totalSum():
     totalPrice = request.form["sumPrice"]
@@ -70,8 +71,8 @@ def totalSum():
     con = sqlite3.connect('orderData.db')
     cursor = con.cursor()
     cursor.execute("SELECT sum(sumPrice) AS total_sum FROM orderList")
-    con.commit()
-    return "계산할 총액입니다."
+    total_price = cursor.fetchall()
+    return render_tempate("payment.html", total_price = total_price)
 
 
 @app.route('/api/billremove', methods=['POST'])
@@ -98,6 +99,14 @@ def edit(idx):
     return render_template("blog_edit.html", title=data_list[0][1], contents=data_list[0][2], index=data_list[0][0]
                            )
 
+# 결제할때 ajax에서 success 조건으로 호출하면 된다. $.ajax( ... success : '/api/billremoveall')
+@app.route('/api/billremoveall')
+def billremoveall():
+    con = sqlite3.connect('orderData.db')
+    cursor = con.cursor()
+    query = "DELETE FROM orderList"
+    cursor.execute(query)
+    con.commit()
 
 
 if __name__ == "__main__":
