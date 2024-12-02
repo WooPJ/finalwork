@@ -39,6 +39,12 @@
                 },
                 success: function(response) {
                     alert("메뉴가 담겼습니다!");
+                    // 수량을 1로 초기화
+                    selectedLi.find("select#orderQuantity").val("1");
+                    // 선택된 메뉴에서 'choose' 클래스 제거
+                    selectedLi.removeClass("choose");
+                    $('input[type="radio"]:checked').prop('checked', false);
+            
                     closeModal()
                 },
             });
